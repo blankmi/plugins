@@ -8,6 +8,12 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -28,6 +34,9 @@ class FlutterCookieManager implements MethodCallHandler {
       case "clearCookies":
         clearCookies(result);
         break;
+      case "getCookies":
+        getCookies(methodCall.<String>argument("url"), result);
+        break;
       default:
         result.notImplemented();
     }
@@ -35,6 +44,25 @@ class FlutterCookieManager implements MethodCallHandler {
 
   void dispose() {
     methodChannel.setMethodCallHandler(null);
+  }
+
+  private static void getCookies(final String url, final Result result) {
+    CookieManager cookieManager = CookieManager.getInstance();
+    final List<Map<String, Object>> cookieListMap = new ArrayList<>();
+
+    String cookiesString = cookieManager.getCookie(url);
+
+    if (cookiesString != null) {
+      String[] cookies = cookiesString.split(";");
+      for (String cookie : cookies) {
+        String[] nameValue = cookie.split("=", 2);
+        Map<String, Object> cookieMap = new HashMap<>();
+        cookieMap.put("name", nameValue[0].trim());
+        cookieMap.put("value", nameValue[1].trim());
+        cookieListMap.add(cookieMap);
+      }
+    }
+    result.success(cookieListMap);
   }
 
   private static void clearCookies(final Result result) {

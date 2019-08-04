@@ -19,10 +19,41 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([[call method] isEqualToString:@"clearCookies"]) {
     [self clearCookies:result];
+  } else if ([[call method] isEqualToString:@"getCookies"]) {
+      if (@available(iOS 11.0, *)) {
+          [self getCookies:call result:result];
+      } else {
+          result([NSArray array]);
+      }
   } else {
     result(FlutterMethodNotImplemented);
   }
 }
+
+- (void)getCookies:(FlutterMethodCall *)call result:(FlutterResult)result API_AVAILABLE(ios(11.0)) {
+    WKWebsiteDataStore *dataStore = [WKWebsiteDataStore defaultDataStore];
+    WKHTTPCookieStore *cookieStore = dataStore.httpCookieStore;
+    NSMutableArray<NSDictionary *> *cookieList = [NSMutableArray array];
+    
+    NSString *url = [[call arguments] valueForKey:@"url"];
+    
+    [cookieStore getAllCookies:^(NSArray<NSHTTPCookie *> *cookies) {
+        for (NSHTTPCookie *cookie in cookies) {
+            if ([url rangeOfString:cookie.domain].location != NSNotFound) {
+                NSDictionary *data = @{
+                                       @"name":cookie.name,
+                                       @"value":cookie.value,
+                                       @"domain":cookie.domain,
+                                       };
+                
+                [cookieList addObject:data];
+            }
+        }
+        
+        result(cookieList);
+    }];
+}
+
 
 - (void)clearCookies:(FlutterResult)result {
   if (@available(iOS 9.0, *)) {
