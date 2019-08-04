@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.flutter.Log;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -35,7 +36,7 @@ class FlutterCookieManager implements MethodCallHandler {
         clearCookies(result);
         break;
       case "getCookies":
-        getCookies(methodCall.<String>argument("url"), result);
+        getCookies(methodCall.<String>argument("domain"), result);
         break;
       default:
         result.notImplemented();
@@ -54,6 +55,7 @@ class FlutterCookieManager implements MethodCallHandler {
 
     if (cookiesString != null) {
       String[] cookies = cookiesString.split(";");
+
       for (String cookie : cookies) {
         String[] nameValue = cookie.split("=", 2);
         Map<String, Object> cookieMap = new HashMap<>();

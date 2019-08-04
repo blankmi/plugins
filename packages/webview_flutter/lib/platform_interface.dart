@@ -266,7 +266,7 @@ abstract class WebViewPlatform {
   }
 
   /// Returns all cookies for all [WebView] instances if the domain matches the given url.
-  Future<List<Map<String,String>>> getCookies(String url) {
+  Future<List<Map<String, dynamic>>> getCookies(String url) {
     throw UnimplementedError(
         "WebView getCookies is not implemented on the current platform");
   }

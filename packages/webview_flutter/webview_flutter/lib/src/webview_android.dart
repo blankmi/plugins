@@ -59,5 +59,5 @@ class AndroidWebView implements WebViewPlatform {
   Future<bool> clearCookies() => MethodChannelWebViewPlatform.clearCookies();
 
   @override
-  Future<List<Map<String, String>>> getCookies(String url) => MethodChannelWebViewPlatform.getCookies(url);
+  Future<List<Map<String, dynamic>>> getCookies(String url) => MethodChannelWebViewPlatform.getCookies(url);
 }

@@ -822,8 +822,10 @@ class CookieManager {
 
   /// Gets all cookies for all [WebView] instances if the domain matches the one of the given url.
   ///
+  /// For android the name and the value will be returned, for ios the domain will be returned, too.
+  ///
   /// This is a no op on iOS version smaller than 11.
-  Future<List<Map<String,String>>> getCookies(String url) => WebView.platform.getCookies(url);
+  Future<List<Map<String, dynamic>>> getCookies(String url) => WebView.platform.getCookies(url);
 }
 
 // Throws an ArgumentError if `url` is not a valid URL string.

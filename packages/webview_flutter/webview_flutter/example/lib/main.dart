@@ -80,6 +80,7 @@ class _WebViewExampleState extends State<WebViewExample> {
             print('Page started loading: $url');
           },
           onPageFinished: (String url) {
+            CookieManager().getCookies(url).then((cookies) => print('found cookies = $cookies'));
             print('Page finished loading: $url');
           },
           gestureNavigationEnabled: true,

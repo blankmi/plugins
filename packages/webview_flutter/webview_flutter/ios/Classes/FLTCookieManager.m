@@ -21,7 +21,7 @@
     [self clearCookies:result];
   } else if ([[call method] isEqualToString:@"getCookies"]) {
       if (@available(iOS 11.0, *)) {
-          [self getCookies:call result:result];
+          [self getCookies:[[call arguments] valueForKey:@"domain"] result:result];
       } else {
           result([NSArray array]);
       }
@@ -30,16 +30,14 @@
   }
 }
 
-- (void)getCookies:(FlutterMethodCall *)call result:(FlutterResult)result API_AVAILABLE(ios(11.0)) {
+- (void)getCookies:(NSString *)domain result:(FlutterResult)result API_AVAILABLE(ios(11.0)) {
     WKWebsiteDataStore *dataStore = [WKWebsiteDataStore defaultDataStore];
     WKHTTPCookieStore *cookieStore = dataStore.httpCookieStore;
     NSMutableArray<NSDictionary *> *cookieList = [NSMutableArray array];
     
-    NSString *url = [[call arguments] valueForKey:@"url"];
-    
     [cookieStore getAllCookies:^(NSArray<NSHTTPCookie *> *cookies) {
         for (NSHTTPCookie *cookie in cookies) {
-            if ([url rangeOfString:cookie.domain].location != NSNotFound) {
+            if ([domain rangeOfString:cookie.domain].location != NSNotFound || [cookie.domain rangeOfString:domain].location != NSNotFound) {
                 NSDictionary *data = @{
                                        @"name":cookie.name,
                                        @"value":cookie.value,
