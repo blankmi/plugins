@@ -168,6 +168,20 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
         .then<bool>((dynamic result) => result!);
   }
 
+  /// Method channel implementation for [WebViewPlatform.getCookies].
+  static Future<List<Map<String, dynamic>>> getCookies(String url) {
+    return _cookieManagerChannel
+        .invokeMethod<List<dynamic>>('getCookies', <String, dynamic>{"domain": Uri.parse(url).host})
+    // ignore: prefer_collection_literals
+        .then<List<Map<String, dynamic>>>((List<dynamic> result) {
+      final List<Map<dynamic, dynamic>> resultList = result.cast<Map<dynamic, dynamic>>();
+      // ignore: prefer_collection_literals
+      final List<Map<String, dynamic>> cookies = List<Map<String, dynamic>>();
+      resultList.forEach((Map<dynamic, dynamic> values) => cookies.add(values.cast<String, dynamic>()));
+      return cookies;
+    });
+  }
+
   static Map<String, dynamic> _webSettingsToMap(WebSettings? settings) {
     final Map<String, dynamic> map = <String, dynamic>{};
     void _addIfNonNull(String key, dynamic value) {
